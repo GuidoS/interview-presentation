@@ -9,7 +9,7 @@
 
 	<link rel="stylesheet" href="css/reset.css">
 	<link rel="stylesheet" href="css/reveal.css">
-	<link rel="stylesheet" href="css/theme/black.css">
+	<link rel="stylesheet" href="css/theme/moon.css">
 
 	<!-- Theme used for syntax highlighting of code -->
 	<link rel="stylesheet" href="lib/css/monokai.css">
@@ -41,11 +41,10 @@
 					# Overview
 
 					- Introduction
-					- Example
-					- Tooling
-					- Output
-					- Input
-					- Outcomes
+					- Example Project
+					- Geospatial Input
+					- Tabular Input
+					- Workflow Design
 
 				</section>
 			</section>
@@ -58,7 +57,7 @@
 					### Like Burrito
 
 					Note:
-					I prefer my name pronounced [gee-doh] like burrito, mosquito, dorrito, and speedo.
+					I prefer my name pronounced [gee-doh] like burrito, mosquito, Dorrito, and Speedo.
 
 				</section>
 				<section data-markdown>
@@ -78,7 +77,7 @@
 					# History
 
 					- B.A. in Geography from Clark University
-					- 15+ years working with grospatial data, workflows, and development
+					- 15+ years working with geospatial data, workflows, and development
 
 					Note:
 					I have a solid foundation in using geospatial data to solve problems.
@@ -94,7 +93,7 @@
 					- Problem Solving
 
 					Note:
-					I have mastery and understanding of fundamental skills needed to build technical solutions.
+					I have mastery and understanding of the fundamental skills needed to build technical solutions.
 
 				</section>
 				<section data-markdown>
@@ -111,7 +110,7 @@
 					- Linux
 
 					Note:
-					I have used many of the current tools, applications, and framworks for developing solutions.
+					I have used many of the current tools, applications, and frameworks for developing solutions.
 
 				</section>
 				<section data-markdown>
@@ -120,7 +119,7 @@
 					- FME Professional Certification
 					- Deployment of AWS Data Lake Solution
 					- Reputation for geospatial data domain knowledge
-					- Reputation as technical problem solver
+					- Reputation as a technical problem solver
 
 					Note:
 					I am known for problem-solving with geospatial and other technical skills. Colleagues often reach
@@ -143,13 +142,13 @@
 			</section>
 			<section id="example">
 				<section data-markdown>
-					# Example
+					# Example Project
 
-					## Mapping Project
+					## Mapping Access
 
 					Note:
-					In order to demonstrate how I work I will share with you this example mapping project that I worked
-					on for five years.
+					To demonstrate how I work, I will share with you this example mapping project that I worked on for
+					five years.
 
 				</section>
 				<section data-markdown>
@@ -158,51 +157,227 @@
 					Create a reusable solution to collect, convert, and aggregate spatial data working with a team
 					across two offices that reports the output data multiple times a year for five years.
 
+					Note:
+					This was a long way to say show us areas where people have access to the data providers services in
+					the U.S.
+
 				</section>
 				<section data-markdown>
 					# Variables
 
 					- stake holders
+					- proprietary information
 					- data providers
 					- team members
 					- output formats
 					- reporting dates
 
-					Notes:
+					Note:
 					Each variable is a multiplier on the number issues the solution needs to satisfy to be succesful
 
 				</section>
-			</section>
-			<section id="tooling">
 				<section data-markdown>
-					# Tooling
+					# Reporting Standards
+
+					- Tiger block polygons for urban areas
+					- Tiger road polylines for rural areas
+
+					Note:
+					Census Tiger data is a common standard for U.S. demographics. It is both a blessing and a curse do
+					variations from decade to decade from changing block boundaries and road networks.
+
+				</section>
+				<section data-markdown>
+					# Conflation
+
+					The merging of two or more sets of
+					information, texts, ideas, etc. into one.
+					-Google Dictionary
+
+					Note:
+					Combining data is tricky because you risk the chance of mis-representing the source information in
+					your output.
+
+				</section>
+			</section>
+			<section id="geospatial">
+				<section data-markdown>
+					# Geospatial Input Data
+
+					- Point data representing homes with access
+					- Polygons representing areas with access
+					- Lines representing roads with access
+
+				</section>
+				<section data-markdown>
+					# Issue #1
+
+					## Road to Road Conflation
+
+					![Issue 1](./img/issue_1.png "Issue 1")
+
+					Note:
+					Data providers used multiple reference system geometries for the road linework. Alignment of
+					geometry or 1:1 relationship caused issues.
+
+				</section>
+				<section data-markdown>
+					# Issue #1
+
+					## Solutions
+
+					- Buffer provided segment and then join to Tiger segments that are within buffer
+					- Snap provided segment end points or vertices to Tiger segments then join overlapping geometries
+					- Convert provided segments to center points and then join to nearest Tiger segment
+
+				</section>
+				<section data-markdown>
+					# Issue #1
+
+					## Reasoning and Research
+
+					- Buffering segments does not work if new segments along a road are smaller than the potentially
+					associated Tiger geometry
+					- There is no way to set a proper tolerance for snapping to Tiger geometry
+					- Center points are not exact, but they can represent 1:* relationships and can assign data from new
+					roads to nearest segment in Tiger geometry
+
+				</section>
+			</section>
+			<section id="tabular">
+				<section data-markdown>
+					# Tabular Input Data
+
+					- x,y representing homes
+					- census tiger ids
+
+				</section>
+				<section data-markdown>
+					# Issue #2
+
+					## Processing x,y points
+
+					![Issue 2](./img/issue_2.png "Issue 2")
+
+					Note:
+					x,y point data commonly uses decimal degree latitude and longitude coordinates and Tiger Data is in
+					NAD 83 feet.
+
+				</section>
+				<section data-markdown>
+					# Issue #2
+
+					## Solutions
+
+					- Convert all incoming data into NAD83 before processing
+					- Convert all reference data into WGS83 before processing
+
+				</section>
+				<section data-markdown>
+					# Issue #2
+
+					## Reasoning and Research
+
+					- Each provider data set sent will need o be converted to NAD83, makig this a time sync
+					- Only the output data will need the original source geometry from Tiger, so geometry can be
+					rejoined by
+					block or road id when reporting
+					- None of the provider data we looked at came in as NAD83. The majority of the data, both tabular
+					and
+					geospatial was in lat/lon coordinates
+
+				</section>
+			</section>
+			<section id="workflow">
+				<section data-markdown>
+					# Workflow Design
+
+					![xkcd 974](img/the_general_problem.png "xkcd 974")
+
+				</section>
+				<section data-markdown data-background="img/automation_2x.png" data-background-size="500px">
+				</section>
+				<section data-markdown>
+					# Issue #3
+
+					## What tools should I use?
+
+				</section>
+				<section data-markdown>
+					# Issue #3
+
+					## Workflow Design Goals
+
+					- modular tools
+					- self documenting process
+					- accessible for GIS Analysts
+
+				</section>
+				<section data-markdown>
+					# Issue #3.1.0
+
+					## Use FME Desktop
+
+					- Develop reusable processing models quickly
+					- Conversion models act as documentation
+					- Limited licenses available
+
+				</section>
+				<section data-markdown>
+					# Issue #3.2.0
+
+					## Use ArcGIS Data Interoperability extension
+
+					- Floating licenses available
+					- Toolset accessible through familiar ArcGIS
+					- Editing environment buggy and loses model updates
+
+				</section>
+				<section data-markdown>
+					# Issue #3.3.0
+
+					## Use ArcGIS Model Builder
+
+					- Can build reusable models
+					- Models are self documenting and can be stored with processed data
+					- Models get too complicated and fail when using variables
+
+				</section>
+				<section data-markdown>
+					# Issue #3.3.1
+
+					## Use ArcGIS Arcpy Scripts
+
+					- Can build reusable scripts
+					- Not self documenting when run
+					- Not familiar to GIS Analysts
+
+				</section>
+				<section data-markdown>
+					# Issue #3.3.2
+
+					## Use ArcGIS Model Builder and Arcpy Scripts Tools
+
+					- Can build reusable scripts
+					- Models add self documentation and are stored with processing data
+					- GIS Analysts can use Model Builder to access Python scripts
+
+				</section>
+			</section>
+			<section id=conclusion>
+				<section data-markdown>
+					# Conclusion
+
+					## Results
+
+					- Time spent processing data improved with each round by at least 25%
+					- Documentation of process allowed for auditing providers for QC
+					- Modular design allowed for new scripts to be added to the workflow when needed
+
 				</section>
 				<section data-markdown>
 					# TBD
-				</section>
-			</section>
-			<section id="output">
-				<section data-markdown>
-					# Output
-				</section>
-				<section data-markdown>
-					# TBD
-				</section>
-			</section>
-			<section id=input>
-				<section data-markdown>
-					# Input
-				</section>
-				<section data-markdown>
-					# TBD
-				</section>
-			</section>
-			<section id=outcomes>
-				<section data-markdown>
-					# Outcomes
-				</section>
-				<section data-markdown>
-					# TBD
+
 				</section>
 			</section>
 		</div>
@@ -216,6 +391,7 @@
 		// - https://github.com/hakimel/reveal.js#dependencies
 		Reveal.initialize({
 			hash: true,
+			transition: 'convex',
 			dependencies: [
 				{ src: 'plugin/markdown/marked.js' },
 				{ src: 'plugin/markdown/markdown.js' },
